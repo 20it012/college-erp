@@ -1,25 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth')
+const {auth, isadmincheck} = require('../middleware/auth')
 const Student = require('../model/student.model')
-const Admin = require('../model/admin.model')
-const Staff = require('../model/staff.model')
+const User = require('../model/user.model')
+// const Admin = require('../model/admin.model')
+// const Staff = require('../model/staff.model')
 const Department = require('../model/department.model')
 
 //Add Admin
 router.post('/', async (req, res) => {
-    let admin = new Admin(req.body);
+    let admin = new User(req.body);
     try {
         await admin.save()
         const token = await admin.generateAuthToken()
         res.status(201).send({ admin, token })
+        console.log(token)
     } catch (e) {
         res.status(400).send(e)
     }
 })
 
 //Add Student
-router.post('/students', auth, async (req, res) => {
+router.post('/students', auth, isadmincheck, async (req, res) => {
     let student = new Student(req.body);
     try {
         await student.save()
@@ -62,11 +64,15 @@ router.delete('/students/:id', auth, async (req, res) => {
 });
 
 //Add staff 
-router.post('/staff', auth, async (req, res) => {
-    let staff = new Staff(req.body);
+router.post('/staff', auth, isadmincheck, async (req, res) => {
+    let staff = new User({
+        ...req.body,
+        role: 'staff'
+    });
     try {
         await staff.save()
-        res.status(201).send(staff)
+        const token = await staff.generateAuthToken()
+        res.status(201).send({ staff })
     } catch (e) {
         res.status(400).send(e)
     }
@@ -76,7 +82,7 @@ router.post('/staff', auth, async (req, res) => {
 router.patch('/staff/:id', auth, async (req, res) => {
     const staffId = req.params.id;
     try {
-        const staff = await Staff.findById(staffId);
+        const staff = await User.findById(staffId);
         if (!staff) {
             return res.status(404).send({ error: 'Staff member not found' });
         }
@@ -93,7 +99,7 @@ router.patch('/staff/:id', auth, async (req, res) => {
 router.delete('/staff/:id', auth, async (req, res) => {
     const staffId = req.params.id;
     try {
-        const staff = await Staff.findByIdAndDelete(staffId);
+        const staff = await User.findByIdAndDelete(staffId);
         if (!staff) {
             return res.status(404).send({ error: 'Staff member not found' });
         }
@@ -144,4 +150,4 @@ router.delete('/department/:id', auth, async (req, res) => {
     }
 });
 
-module.exports = router
+module.exports = router;

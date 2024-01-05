@@ -1,4 +1,4 @@
-# ERP
+# collage-erp
 
 The College ERP POC is a Node Express project with authentication, role management, and analytics. It manages staff, students, and department data, provides attendance tracking, and offers analytics on students and vacant seats based on specified parameters.
 
@@ -36,7 +36,7 @@ Before you begin, ensure you have the following installed:
 2. **Install dependencies:**
 
     ```bash
-    cd ERP
+    cd collage-erp
     npm install
     ```
 
@@ -55,9 +55,10 @@ Before you begin, ensure you have the following installed:
    Create a MongoDB configuration file (e.g., `db.js`) in the root of your project:
 
    ```javascript
-   // db.js
+   // mongodb.js
    const mongoose = require('mongoose');
-   const dbUrl = mongodb-link; // Update the path based on your project structure
+   const dbUrl = mongodb-link; // Update the path based on your project structure or directly connect mongodb
+   mongoose.connect("mongodb://localhost/databasename")
 
 4. **Postman Setup**
 
